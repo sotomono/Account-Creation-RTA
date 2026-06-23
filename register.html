@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UsoPachy | アカウント登録</title>
+  <link rel="stylesheet" href="site-style.css">
+  <style>
+    .page-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 24px;
+    }
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 36px 40px;
+      width: 100%;
+      max-width: 480px;
+    }
+    .form-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .form-sub {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      margin-bottom: 28px;
+    }
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-mid);
+      margin-bottom: 6px;
+    }
+    .field input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus { border-color: var(--brand); }
+    .field input.error { border-color: var(--accent); background: #fff5f5; }
+    .field-hint {
+      font-size: 0.7rem;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+    .field-error {
+      font-size: 0.7rem;
+      color: var(--accent);
+      margin-top: 4px;
+      display: none;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+    }
+    /* パスワード強度バー */
+    .strength-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      transition: width 0.3s, background 0.3s;
+    }
+    .strength-label {
+      font-size: 0.68rem;
+      color: var(--text-light);
+      margin-top: 3px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <span class="nav-logo">UsoPachy</span>
+    <ul class="nav-links">
+      <li><a target="_blank" href="#">製品</a></li>
+      <li><a target="_blank" href="#">料金</a></li>
+      <li><a target="_blank" href="#">導入事例</a></li>
+      <li><a target="_blank" href="#">サポート</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-content">
+    <div class="page-wrap">
+      <div class="form-card">
+        <h1 class="form-title">アカウント登録</h1>
+        <p class="form-sub">無料トライアルを開始するにはアカウントの作成が必要です。</p>
+        <p style="font-size:0.72rem; color:var(--accent); background:#fff5f5; border:1px solid #ffcccc; border-radius:4px; padding:8px 12px; margin-bottom:20px;">※ このサービスはフィクションです。入力した情報は送信・保存されません。</p>
+
+        <div class="field">
+          <label>お名前 <span style="color:var(--accent)">*</span></label>
+          <input type="text" id="name" placeholder="山田 太郎">
+          <p class="field-error" id="err-name">お名前を入力してください</p>
+        </div>
+
+        <div class="field">
+          <label>メールアドレス <span style="color:var(--accent)">*</span></label>
+          <input type="text" id="email" placeholder="taro@example.com">
+          <p class="field-error" id="err-email">有効なメールアドレスを入力してください</p>
+        </div>
+
+        <div class="field">
+          <label>メールアドレス（確認用） <span style="color:var(--accent)">*</span></label>
+          <input type="text" id="email2" placeholder="taro@example.com">
+          <p class="field-error" id="err-email2">メールアドレスが一致しません</p>
+        </div>
+
+        <div class="field">
+          <label>パスワード <span style="color:var(--accent)">*</span></label>
+          <input type="password" id="password" placeholder="" oninput="checkStrength(this.value)">
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+          <p class="strength-label" id="strength-label"></p>
+          <p class="field-hint">※ 大文字・小文字・数字・記号をそれぞれ1文字以上含む、12文字以上</p>
+          <p class="field-error" id="err-pass">パスワードが要件を満たしていません</p>
+        </div>
+
+        <div class="field">
+          <label>パスワード（確認用） <span style="color:var(--accent)">*</span></label>
+          <input type="password" id="password2" placeholder=""
+            oninput="checkPass2()"
+            onpaste="event.preventDefault()">
+          <p class="field-hint" style="color:#e07000">※ コピー&ペーストは使用できません</p>
+          <p class="field-error" id="err-pass2">パスワードが一致しません</p>
+        </div>
+
+        <div class="field">
+          <label>会社名</label>
+          <input type="text" id="company" placeholder="株式会社〇〇">
+        </div>
+
+        <div class="field" style="margin-top:8px;">
+          <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-weight:500;">
+            <input type="checkbox" id="agree-terms" style="width:16px; height:16px; margin-top:2px; flex-shrink:0; accent-color:var(--brand);">
+            <span><a href="#" onclick="goTerms(); return false;" style="color:var(--brand);">利用規約</a>を読み、同意します <span style="color:var(--accent)">*</span></span>
+          </label>
+          <p class="field-error" id="err-terms">利用規約への同意が必要です</p>
+        </div>
+
+        <button class="btn-primary submit-btn" onclick="submitForm()">次へ進む →</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span class="footer-logo">UsoPachy</span>
+    <span>© 2025 UsoPachy Inc. All rights reserved.</span>
+  </footer>
+
+  <script>
+    function goTerms() {
+      window.parent.postMessage({ type: 'navigate', to: 'game' }, '*');
+    }
+
+    function checkStrength(val) {
+      const fill  = document.getElementById('strength-fill');
+      const label = document.getElementById('strength-label');
+      let score = 0;
+      if (val.length >= 12)          score++;
+      if (/[A-Z]/.test(val))         score++;
+      if (/[a-z]/.test(val))         score++;
+      if (/[0-9]/.test(val))         score++;
+      if (/[^A-Za-z0-9]/.test(val))  score++;
+      const pct   = (score / 5) * 100;
+      const color = score <= 1 ? '#e53935' : score <= 3 ? '#fb8c00' : '#43a047';
+      const text  = score <= 1 ? '弱い' : score <= 3 ? '普通' : score === 4 ? '強い' : '非常に強い';
+      fill.style.width      = pct + '%';
+      fill.style.background = color;
+      label.textContent     = val ? `強度: ${text}` : '';
+      label.style.color     = color;
+    }
+
+    function checkPass2() {
+      const pass  = document.getElementById('password').value;
+      const pass2 = document.getElementById('password2').value;
+      if (pass2 && pass !== pass2) {
+        showError('password2', 'err-pass2', true);
+      } else {
+        showError('password2', 'err-pass2', false);
+      }
+    }
+
+    function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    function isValidPassword(v) {
+      return v.length >= 12
+        && /[A-Z]/.test(v)
+        && /[a-z]/.test(v)
+        && /[0-9]/.test(v)
+        && /[^A-Za-z0-9]/.test(v);
+    }
+
+    function showError(id, errId, show) {
+      const input = document.getElementById(id);
+      const err   = document.getElementById(errId);
+      input.classList.toggle('error', show);
+      err.style.display = show ? 'block' : 'none';
+    }
+
+    function submitForm() {
+      const name  = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const email2= document.getElementById('email2').value.trim();
+      const pass  = document.getElementById('password').value;
+      const pass2 = document.getElementById('password2').value;
+
+      let hasError = false;
+
+      if (!name)                    { showError('name',      'err-name',   true);  hasError = true; } else { showError('name',      'err-name',   false); }
+      if (!isValidEmail(email))     { showError('email',     'err-email',  true);  hasError = true; } else { showError('email',     'err-email',  false); }
+      if (email !== email2)         { showError('email2',    'err-email2', true);  hasError = true; } else { showError('email2',    'err-email2', false); }
+      if (!isValidPassword(pass))   { showError('password',  'err-pass',   true);  hasError = true; } else { showError('password',  'err-pass',   false); }
+      if (pass !== pass2)           { showError('password2', 'err-pass2',  true);  hasError = true; } else { showError('password2', 'err-pass2',  false); }
+      if (!document.getElementById('agree-terms').checked) {
+        document.getElementById('err-terms').style.display = 'block'; hasError = true;
+      } else {
+        document.getElementById('err-terms').style.display = 'none';
+      }
+
+      if (hasError) return;
+
+      window.parent.postMessage({ type: 'navigate', to: 'game' }, '*');
+    }
+  </script>
+</body>
+</html>

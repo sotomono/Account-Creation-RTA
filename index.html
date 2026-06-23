@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>利用規約RTA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #0b0c10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+
+    /* ── シェル ── */
+    .shell {
+      display: flex;
+      flex-direction: column;
+      width: 1280px;
+      max-width: 98vw;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 60px rgba(0,0,0,0.7);
+      background: #15171c;
+    }
+    .shell-body { display: flex; min-height: 0; }
+    .frame-wrap { flex: 1; min-width: 0; height: 660px; overflow: hidden; }
+    iframe { width: 100%; height: 660px; border: none; display: block; }
+
+    /* ── RTAパネル ── */
+    .rta-panel {
+      width: 240px;
+      flex-shrink: 0;
+      background: #15171c;
+      border-left: 1px solid #2a2d36;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 20px 20px;
+    }
+    .panel-title    { font-size: 1.15rem; font-weight: 900; color: #8d7bff; text-align: center; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .panel-category { font-size: 0.72rem; color: #6b7080; text-align: center; margin-bottom: 18px; letter-spacing: 0.04em; }
+
+    /* ── RTAタイマー（パネル内） ── */
+    .panel-timer {
+      display: none;
+      justify-content: center;
+      align-items: baseline;
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+    .panel-timer.visible { display: flex; }
+
+    .timer-digits {
+      font-family: 'Russo One', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.02em;
+      color: #6b7080;
+      white-space: nowrap;
+    }
+
+    /* ゲーム中：白 */
+    .panel-timer.running .timer-digits {
+      color: #eef0f5;
+    }
+
+    /* クリア時：金色グラデーションで目立たせる */
+    .panel-timer.cleared .timer-digits {
+      background: linear-gradient(180deg, #fff7a0 0%, #f5c400 40%, #c98f00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 6px rgba(240,180,0,0.6));
+    }
+
+    /* ── スプリット ── */
+
+    .panel-divider { border: none; border-top: 1px solid #2a2d36; margin: 16px 0 12px; }
+    .pb-row { display: flex; justify-content: space-between; align-items: center; }
+    .pb-label { font-size: 0.75rem; font-weight: 900; color: #5eead4; letter-spacing: 0.06em; }
+    .pb-val   { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 700; color: #eef0f5; }
+
+    /* ── メダル ── */
+    .medal-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 6px 0 2px;
+      animation: fade-up 0.4s ease both;
+    }
+    .medal-icon { font-size: 1.4rem; }
+    .medal-name { font-size: 0.78rem; font-weight: 900; letter-spacing: 0.06em; }
+    .next-rank {
+      text-align: center;
+      font-size: 0.68rem;
+      color: #6b7080;
+      margin-bottom: 10px;
+      animation: fade-up 0.4s 0.1s ease both;
+    }
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+
+  </style>
+</head>
+<body>
+
+  <div class="shell">
+    <div class="shell-body">
+      <div class="frame-wrap">
+        <iframe id="frame" src="title.html"></iframe>
+      </div>
+      <aside class="rta-panel">
+        <div class="panel-title">アカウント作成RTA</div>
+        <div class="panel-category">Category: Any%</div>
+
+        <hr class="panel-divider">
+        <!-- パネル内タイマー -->
+        <div class="panel-timer" id="panel-timer">
+          <span class="timer-digits" id="panel-timer-val">0.00</span>
+        </div>
+        <div class="pb-row">
+          <span class="pb-label">PERSONAL BEST:</span>
+          <span class="pb-val" id="pb-val">--</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const frame        = document.getElementById('frame');
+    const panelTimer   = document.getElementById('panel-timer');
+    const panelTimerVal= document.getElementById('panel-timer-val');
+    const pbValEl      = document.getElementById('pb-val');
+
+    // PB読み込み
+    const pbStored = localStorage.getItem('rta-pb');
+    pbValEl.textContent = pbStored ? pbStored : '--';
+
+    // タイマーを最初から表示（0.00で静止）
+    panelTimer.classList.add('visible');
+    panelTimerVal.textContent = '0.00';
+
+    // ── タイマー表示フォーマット ──
+    // 入力: 経過ミリ秒
+    // 出力: "0.00" / "9.58" / "1:01.53" / "1:02:63.88" など
+    function formatTime(ms) {
+      const totalCs = Math.floor(ms / 10);       // センチ秒
+      const cs      = totalCs % 100;             // 小数部（2桁）
+      const totalSec= Math.floor(totalCs / 100);
+      const sec     = totalSec % 60;
+      const totalMin= Math.floor(totalSec / 60);
+      const min     = totalMin % 60;
+      const hr      = Math.floor(totalMin / 60);
+
+      const csStr  = String(cs).padStart(2, '0');
+      const secStr = String(sec).padStart(2, '0');
+      const minStr = String(min).padStart(2, '0');
+
+      if (hr > 0) {
+        return `${hr}:${minStr}:${secStr}.${csStr}`;
+      } else if (min > 0) {
+        return `${min}:${secStr}.${csStr}`;
+      } else {
+        // 秒は先頭ゼロなし
+        return `${totalSec}.${csStr}`;
+      }
+    }
+
+    // 解説者テキスト
+    function setGuide(text) {}
+
+    let pendingRank = null;
+
+    // タイマー管理
+    let gameStartTime = null;
+    let timerInterval = null;
+
+    function enterGame() {
+      checksRemaining = 5;
+      gameStartTime = Date.now();
+      panelTimer.classList.remove('cleared');
+      panelTimer.classList.add('running');
+      panelTimerVal.textContent = '0.00';
+      setGuide('利用規約にすばやく同意');
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        panelTimerVal.textContent = formatTime(Date.now() - gameStartTime);
+      }, 10);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      panelTimer.classList.remove('running');
+      panelTimer.classList.add('cleared');
+    }
+
+    function exitGame() {
+      stopTimer();
+      panelTimerVal.textContent = '0.00';
+      panelTimer.classList.remove('cleared');
+      document.getElementById('medal-wrap').style.display = 'none';
+      document.getElementById('next-rank').style.display  = 'none';
+      setGuide('「利用規約を読む」を押してタイマースタート');
+    }
+
+    // postMessage受信
+    window.addEventListener('message', (e) => {
+      const d = e.data;
+      if (!d || !d.type) return;
+
+      // タイマーを即停止
+      if (d.type === 'stopTimer') {
+        const finalMs  = gameStartTime ? Date.now() - gameStartTime : 0;
+        const finalFmt = formatTime(finalMs);
+        const finalSec = (finalMs / 1000).toFixed(2);
+        stopTimer();
+        panelTimerVal.textContent = finalFmt;
+
+        // メダル判定（結果を保持、clear.htmlで表示）
+        const RANKS = [
+          { max:   2, icon: '🏅', name: 'PLATINUM+', color: '#e0f0ff', next: null },
+          { max:   5, icon: '🏅', name: 'PLATINUM',  color: '#c8e8ff', next:   2 },
+          { max:  15, icon: '🥇', name: 'GOLD+',     color: '#fff4a0', next:   5 },
+          { max:  20, icon: '🥇', name: 'GOLD',      color: '#ffe87a', next:  15 },
+          { max:  30, icon: '🥈', name: 'SILVER+',   color: '#e8e8e8', next:  20 },
+          { max:  60, icon: '🥈', name: 'SILVER',    color: '#d8d8d8', next:  30 },
+          { max:  90, icon: '🥉', name: 'BRONZE+',   color: '#f0d8b0', next:  60 },
+          { max: 120, icon: '🥉', name: 'BRONZE',    color: '#e0c090', next:  90 },
+          { max: Infinity, icon: '', name: '',        color: '',        next: 120 },
+        ];
+        const sec = finalMs / 1000;
+        pendingRank = RANKS.find(r => sec <= r.max);
+        pendingRank.sec = sec;
+
+        // PB更新
+        const prevPb = parseFloat(localStorage.getItem('rta-pb-sec') || '9999');
+        if (sec < prevPb) {
+          localStorage.setItem('rta-pb-sec', finalSec);
+          localStorage.setItem('rta-pb',     finalFmt);
+          pbValEl.textContent = finalFmt;
+        }
+        return;
+      }
+
+      if (d.type === 'navigate') {
+        switch (d.to) {
+          case 'game':
+            frame.src = 'game.html';
+            break;
+
+          case 'clear': {
+            frame.src = 'clear.html';
+            frame.onload = () => {
+              frame.contentWindow.postMessage({ type: 'medal', rank: pendingRank }, '*');
+              frame.onload = null;
+            };
+            break;
+          }
+
+          case 'register':
+            frame.src = 'register.html';
+            frame.onload = () => { enterGame(); frame.onload = null; };
+            break;
+
+          case 'verify':
+            frame.src = 'verify.html';
+            break;
+
+          case 'profile':
+            frame.src = 'profile.html';
+            break;
+
+          case 'title':
+            exitGame();
+            frame.src = 'title.html';
+            break;
+
+          case 'about':
+            frame.src = 'about.html';
+            break;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UsoPachy | メール認証</title>
+  <link rel="stylesheet" href="site-style.css">
+  <style>
+    .page-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 24px;
+      position: relative;
+    }
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 36px 40px;
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+    }
+    .mail-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .form-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .form-sub {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+    .code-input-wrap {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .code-input-wrap input {
+      width: 48px;
+      height: 52px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .code-input-wrap input:focus { border-color: var(--brand); }
+    .code-input-wrap input.error { border-color: var(--accent); background: #fff5f5; }
+    .field-error {
+      font-size: 0.75rem;
+      color: var(--accent);
+      margin-bottom: 14px;
+      display: none;
+    }
+    .submit-btn { width: 100%; padding: 12px; margin-top: 4px; }
+
+    /* 隠し認証コード：フッター内にひっそり */
+    .hidden-code {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.62rem;
+      color: #2a2d36;
+      letter-spacing: 0.02em;
+      user-select: none;
+      z-index: 10;
+    }
+    .hidden-code .code-val {
+      font-family: 'JetBrains Mono', monospace;
+      color: #2d2f38;
+      letter-spacing: 0.18em;
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <span class="nav-logo">UsoPachy</span>
+    <ul class="nav-links">
+      <li><a target="_blank" href="#">製品</a></li>
+      <li><a target="_blank" href="#">料金</a></li>
+      <li><a target="_blank" href="#">導入事例</a></li>
+      <li><a target="_blank" href="#">サポート</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-content">
+    <div class="page-wrap">
+      <div class="form-card">
+        <div class="mail-icon">📨</div>
+        <h1 class="form-title">メールを確認してください</h1>
+        <p class="form-sub">
+          ご登録のメールアドレスに6桁の認証コードを送信しました。<br>
+          コードを入力して認証を完了してください。
+        </p>
+        <div class="code-input-wrap" id="codeInputs">
+          <input type="text" maxlength="1" oninput="onCodeInput(this, 0)">
+          <input type="text" maxlength="1" oninput="onCodeInput(this, 1)">
+          <input type="text" maxlength="1" oninput="onCodeInput(this, 2)">
+          <input type="text" maxlength="1" oninput="onCodeInput(this, 3)">
+          <input type="text" maxlength="1" oninput="onCodeInput(this, 4)">
+          <input type="text" maxlength="1" oninput="onCodeInput(this, 5)">
+        </div>
+        <p class="field-error" id="err-code">認証コードが正しくありません</p>
+        <button class="btn-primary submit-btn" onclick="submitCode()">認証する</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span class="footer-logo">UsoPachy</span>
+    <span>© 2025 UsoPachy Inc. All rights reserved.</span>
+  </footer>
+
+  <!-- 認証コードがフッター内にひっそり隠れている -->
+  <div class="hidden-code">
+    Build <span class="code-val" id="hiddenCode"></span> · UsoPachy Platform v4.2.1
+  </div>
+
+  <script>
+    // 6桁コードをランダム生成
+    const CODE = String(Math.floor(100000 + Math.random() * 900000));
+    document.getElementById('hiddenCode').textContent = CODE;
+
+    const inputs = document.querySelectorAll('.code-input-wrap input');
+
+    function onCodeInput(el, idx) {
+      el.value = el.value.replace(/[^0-9]/g, '');
+      if (el.value && idx < 5) inputs[idx + 1].focus();
+    }
+
+    function submitCode() {
+      const entered = Array.from(inputs).map(i => i.value).join('');
+      const err = document.getElementById('err-code');
+      inputs.forEach(i => i.classList.remove('error'));
+
+      if (entered !== CODE) {
+        inputs.forEach(i => i.classList.add('error'));
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+      window.parent.postMessage({ type: 'navigate', to: 'profile' }, '*');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UsoPachy | プロフィール設定</title>
+  <link rel="stylesheet" href="site-style.css">
+  <style>
+    .page-wrap {
+      flex: 1;
+      padding: 32px 24px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px 40px;
+      width: 100%;
+      max-width: 520px;
+    }
+    .step-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+    }
+    .step { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+    .step.done { background: var(--brand); }
+    .step.active { background: #90aaee; }
+    .form-title { font-size: 1.15rem; font-weight: 900; color: var(--text); margin-bottom: 6px; }
+    .form-sub { font-size: 0.78rem; color: var(--text-light); margin-bottom: 24px; }
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-mid);
+      margin-bottom: 5px;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: var(--text);
+      outline: none;
+      background: var(--white);
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus { border-color: var(--brand); }
+    .field input.error, .field select.error { border-color: var(--accent); }
+    .field-error { font-size: 0.7rem; color: var(--accent); margin-top: 3px; display: none; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .section-divider {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-light);
+      text-transform: uppercase;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin: 20px 0 16px;
+    }
+
+    /* CAPTCHA */
+    .captcha-wrap {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .captcha-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-light);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .captcha-question {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+    .captcha-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .captcha-opt {
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--white);
+      font-family: inherit;
+      text-align: left;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .captcha-opt:hover { border-color: var(--brand); background: var(--brand-light); }
+    .captcha-opt.selected { border-color: var(--brand); background: var(--brand-light); font-weight: 700; }
+    .captcha-opt.wrong { border-color: var(--accent); background: #fff5f5; animation: shake 0.3s ease; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25%      { transform: translateX(-6px); }
+      75%      { transform: translateX(6px); }
+    }
+    .captcha-error { font-size: 0.72rem; color: var(--accent); margin-top: 6px; display: none; }
+
+    .submit-btn { width: 100%; padding: 12px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <span class="nav-logo">UsoPachy</span>
+    <ul class="nav-links">
+      <li><a target="_blank" href="#">製品</a></li>
+      <li><a target="_blank" href="#">料金</a></li>
+      <li><a target="_blank" href="#">導入事例</a></li>
+      <li><a target="_blank" href="#">サポート</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-content">
+    <div class="page-wrap">
+      <div class="form-card">
+        <!-- ステップバー -->
+        <div class="step-bar">
+          <div class="step done"></div>
+          <div class="step done"></div>
+          <div class="step done"></div>
+          <div class="step active"></div>
+        </div>
+
+        <h1 class="form-title">プロフィール設定</h1>
+        <p class="form-sub">サービス最適化のため、以下の情報をご入力ください。すべて必須です。</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label>役職 <span style="color:var(--accent)">*</span></label>
+            <input type="text" id="title" placeholder="例：エンジニア">
+            <p class="field-error" id="err-title">入力してください</p>
+          </div>
+          <div class="field">
+            <label>部署 <span style="color:var(--accent)">*</span></label>
+            <input type="text" id="dept" placeholder="例：情報システム部">
+            <p class="field-error" id="err-dept">入力してください</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>従業員数 <span style="color:var(--accent)">*</span></label>
+          <select id="size">
+            <option value="">選択してください</option>
+            <option>1〜10名</option>
+            <option>11〜50名</option>
+            <option>51〜200名</option>
+            <option>201〜1000名</option>
+            <option>1001名以上</option>
+          </select>
+          <p class="field-error" id="err-size">選択してください</p>
+        </div>
+
+        <div class="field">
+          <label>業種 <span style="color:var(--accent)">*</span></label>
+          <select id="industry">
+            <option value="">選択してください</option>
+            <option>IT・通信</option>
+            <option>製造</option>
+            <option>金融・保険</option>
+            <option>小売・流通</option>
+            <option>医療・福祉</option>
+            <option>その他</option>
+          </select>
+          <p class="field-error" id="err-industry">選択してください</p>
+        </div>
+
+        <div class="field">
+          <label>UsoPachy をどこでお知りになりましたか？ <span style="color:var(--accent)">*</span></label>
+          <select id="source">
+            <option value="">選択してください</option>
+            <option>Web検索</option>
+            <option>SNS</option>
+            <option>知人の紹介</option>
+            <option>展示会・イベント</option>
+            <option>広告</option>
+            <option>その他</option>
+          </select>
+          <p class="field-error" id="err-source">選択してください</p>
+        </div>
+
+        <div class="field">
+          <label>電話番号 <span style="color:var(--accent)">*</span></label>
+          <input type="text" id="phone" placeholder="例：03-1234-5678">
+          <p class="field-error" id="err-phone">電話番号を入力してください</p>
+        </div>
+
+        <p class="section-divider">セキュリティ確認</p>
+
+        <!-- CAPTCHA -->
+        <div class="captcha-wrap">
+          <p class="captcha-label">Human Verification</p>
+          <p class="captcha-question" id="captcha-q"></p>
+          <div class="captcha-options" id="captcha-opts"></div>
+          <p class="captcha-error" id="captcha-err">正しい答えを選んでください</p>
+        </div>
+
+        <button class="btn-primary submit-btn" onclick="submitProfile()">登録を完了する →</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span class="footer-logo">UsoPachy</span>
+    <span>© 2025 UsoPachy Inc. All rights reserved.</span>
+  </footer>
+
+  <script>
+    // CAPTCHA生成（算数問題）
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    const correctAnswer = a + b;
+    document.getElementById('captcha-q').textContent = `${a} + ${b} = ?`;
+
+    // 選択肢（正解1つ＋ダミー3つ）
+    const dummies = new Set([correctAnswer]);
+    while (dummies.size < 4) {
+      dummies.add(Math.floor(Math.random() * 18) + 1);
+    }
+    const options = Array.from(dummies).sort(() => Math.random() - 0.5);
+    let selectedAnswer = null;
+
+    const optsEl = document.getElementById('captcha-opts');
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'captcha-opt';
+      btn.textContent = opt;
+      btn.onclick = () => {
+        document.querySelectorAll('.captcha-opt').forEach(b => b.classList.remove('selected', 'wrong'));
+        btn.classList.add('selected');
+        selectedAnswer = opt;
+        document.getElementById('captcha-err').style.display = 'none';
+      };
+      optsEl.appendChild(btn);
+    });
+
+    function showErr(id, errId, show) {
+      document.getElementById(id).classList.toggle('error', show);
+      document.getElementById(errId).style.display = show ? 'block' : 'none';
+    }
+
+    function submitProfile() {
+      let hasError = false;
+
+      if (!document.getElementById('title').value.trim())    { showErr('title',    'err-title',    true);  hasError = true; } else { showErr('title',    'err-title',    false); }
+      if (!document.getElementById('dept').value.trim())     { showErr('dept',     'err-dept',     true);  hasError = true; } else { showErr('dept',     'err-dept',     false); }
+      if (!document.getElementById('size').value)            { showErr('size',     'err-size',     true);  hasError = true; } else { showErr('size',     'err-size',     false); }
+      if (!document.getElementById('industry').value)        { showErr('industry', 'err-industry', true);  hasError = true; } else { showErr('industry', 'err-industry', false); }
+      if (!document.getElementById('source').value)          { showErr('source',   'err-source',   true);  hasError = true; } else { showErr('source',   'err-source',   false); }
+      if (!document.getElementById('phone').value.trim())    { showErr('phone',    'err-phone',    true);  hasError = true; } else { showErr('phone',    'err-phone',    false); }
+
+      // CAPTCHA確認
+      if (selectedAnswer !== correctAnswer) {
+        document.querySelectorAll('.captcha-opt.selected').forEach(b => {
+          b.classList.remove('selected');
+          b.classList.add('wrong');
+        });
+        document.getElementById('captcha-err').style.display = 'block';
+        hasError = true;
+      }
+
+      if (hasError) return;
+      window.parent.postMessage({ type: 'stopTimer' }, '*');
+      window.parent.postMessage({ type: 'navigate', to: 'clear' }, '*');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+/* ===== site-style.css : 企業サイト共通スタイル ===== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand:       #1a4fd6;
+  --brand-dark:  #1239a8;
+  --brand-light: #e8eefb;
+  --accent:      #e8401c;
+  --text:        #1a1a1a;
+  --text-mid:    #555;
+  --text-light:  #888;
+  --border:      #dde2ea;
+  --bg:          #f7f8fc;
+  --white:       #ffffff;
+  --nav-h:       56px;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── ナビ ── */
+.site-nav {
+  height: var(--nav-h);
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 32px;
+  flex-shrink: 0;
+}
+.nav-logo {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--brand);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nav-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin-left: auto;
+}
+.nav-links a {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+.nav-links a:hover { color: var(--brand); }
+
+/* ── フッター ── */
+.site-footer {
+  margin-top: auto;
+  background: #1a1e28;
+  color: #8892a4;
+  font-size: 0.72rem;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.footer-logo { font-weight: 900; color: #c0c8d8; letter-spacing: 0.06em; }
+
+/* ── ページコンテンツ領域 ── */
+.page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── ボタン ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 36px;
+  background: var(--brand);
+  color: white;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-primary:hover  { background: var(--brand-dark); }
+.btn-primary:active { transform: scale(0.98); }

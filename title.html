@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UsoPachy | クラウド型データ統合プラットフォーム</title>
+  <link rel="stylesheet" href="site-style.css">
+  <style>
+    /* ── ヒーロー ── */
+    .hero {
+      background: linear-gradient(135deg, #0f2660 0%, #1a4fd6 60%, #2a6ef5 100%);
+      color: white;
+      padding: 64px 48px 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: #a8c4ff;
+      text-transform: uppercase;
+    }
+    .hero-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+    }
+    .hero-sub {
+      font-size: 0.88rem;
+      color: #c8d8ff;
+      line-height: 1.75;
+      max-width: 520px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .btn-hero {
+      display: inline-flex;
+      align-items: center;
+      padding: 11px 28px;
+      background: white;
+      color: var(--brand);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 900;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: opacity 0.15s;
+    }
+    .btn-hero:hover { opacity: 0.88; }
+    .btn-hero-ghost {
+      display: inline-flex;
+      align-items: center;
+      padding: 11px 24px;
+      background: transparent;
+      color: white;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border: 1.5px solid rgba(255,255,255,0.5);
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: border-color 0.15s;
+    }
+    .btn-hero-ghost:hover { border-color: white; }
+
+    /* ── 実績バー ── */
+    .stats-bar {
+      background: #0f2060;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background-color: rgba(255,255,255,0.08);
+    }
+    .stat-item {
+      background: #0f2060;
+      padding: 20px 24px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: white;
+      letter-spacing: 0.02em;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: #a8c4ff;
+      margin-top: 2px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── 3カラム特徴 ── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .feature-item {
+      background: var(--white);
+      padding: 28px 24px 24px;
+    }
+    .feature-icon { font-size: 1.4rem; margin-bottom: 10px; }
+    .feature-title { font-size: 0.88rem; font-weight: 900; color: var(--text); margin-bottom: 6px; }
+    .feature-desc { font-size: 0.76rem; color: var(--text-mid); line-height: 1.7; }
+
+    /* ── 導入事例セクション ── */
+    .cases-section {
+      background: var(--bg);
+      padding: 36px 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--text-light);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .cases-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .case-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 22px;
+    }
+    .case-company {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--brand);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .case-quote {
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 500;
+    }
+    .case-result {
+      margin-top: 10px;
+      font-size: 0.72rem;
+      color: var(--text-light);
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .case-result strong { color: #1a8a3a; }
+
+    /* ── プランセクション ── */
+    .plans-section {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 36px 32px;
+    }
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .plan-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px 20px;
+      position: relative;
+    }
+    .plan-card.popular {
+      border-color: var(--brand);
+      border-width: 2px;
+    }
+    .popular-badge {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--brand);
+      color: white;
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      padding: 3px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .plan-name { font-size: 0.78rem; font-weight: 900; color: var(--text-light); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+    .plan-price { font-size: 1.5rem; font-weight: 900; color: var(--text); margin-bottom: 4px; }
+    .plan-price span { font-size: 0.78rem; font-weight: 500; color: var(--text-light); }
+    .plan-desc { font-size: 0.72rem; color: var(--text-light); margin-bottom: 14px; }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .plan-features li { font-size: 0.76rem; color: var(--text-mid); display: flex; gap: 6px; }
+    .plan-features li::before { content: '✓'; color: #2a9a4a; font-weight: 900; flex-shrink: 0; }
+
+    /* ── 利用規約セクション ── */
+    .terms-section {
+      background: var(--white);
+      border-top: 3px solid var(--brand);
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .terms-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--brand);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .terms-heading {
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .terms-note {
+      font-size: 0.72rem;
+      color: var(--text-light);
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <span class="nav-logo">UsoPachy</span>
+    <ul class="nav-links">
+      <li><a target="_blank" href="#">製品</a></li>
+      <li><a target="_blank" href="#">料金</a></li>
+      <li><a target="_blank" href="#">導入事例</a></li>
+      <li><a target="_blank" href="#">サポート</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-content">
+
+    <!-- ヒーロー -->
+    <div class="hero">
+      <p class="hero-eyebrow">Enterprise Data Platform</p>
+      <h1 class="hero-title">データの統合・分析・活用を<br>ひとつのプラットフォームで</h1>
+      <p class="hero-sub">UsoPachyは、散在する企業データをリアルタイムで一元管理し、意思決定のスピードを最大化するクラウド型データ統合基盤です。</p>
+      <div class="hero-actions">
+        <button class="btn-hero" onclick="goGame()">アカウントを作成</button>
+        <button class="btn-hero-ghost">デモを見る</button>
+      </div>
+    </div>
+
+    <!-- 実績バー -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-num">2,400<small style="font-size:1rem">+</small></div>
+        <div class="stat-label">導入企業数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">99.98<small style="font-size:1rem">%</small></div>
+        <div class="stat-label">稼働率 SLA</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">200<small style="font-size:1rem">+</small></div>
+        <div class="stat-label">対応データソース</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0.3<small style="font-size:1rem">秒</small></div>
+        <div class="stat-label">平均同期レイテンシ</div>
+      </div>
+    </div>
+
+    <!-- 特徴 -->
+    <div class="features">
+      <div class="feature-item">
+        <div class="feature-icon">⚡</div>
+        <p class="feature-title">リアルタイム同期</p>
+        <p class="feature-desc">200以上のデータソースに対応。変更を検知し、数秒以内に全拠点へ反映します。</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔒</div>
+        <p class="feature-title">エンタープライズ級セキュリティ</p>
+        <p class="feature-desc">ISO 27001認証取得済み。転送・保管時の暗号化、細粒度アクセス制御を標準装備。</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <p class="feature-title">BI連携ダッシュボード</p>
+        <p class="feature-desc">Tableau・Power BI・Lookerと即日連携。コードなしでインサイトを可視化。</p>
+      </div>
+    </div>
+
+    <!-- 導入事例 -->
+    <div class="cases-section">
+      <p class="section-label">導入事例</p>
+      <div class="cases-grid">
+        <div class="case-card">
+          <p class="case-company">Nexora Finance</p>
+          <p class="case-quote">「夜間バッチ処理に頼っていたデータ連携が、TeraSyncの導入でリアルタイムに変わりました。」</p>
+          <p class="case-result">レポート生成時間 <strong>94%削減</strong></p>
+        </div>
+        <div class="case-card">
+          <p class="case-company">Pulsar Retail Group</p>
+          <p class="case-quote">「在庫データと販売データの乖離がなくなり、欠品ロスが大幅に改善されました。」</p>
+          <p class="case-result">欠品ロス <strong>年間1.2億円削減</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 料金プラン -->
+    <div class="plans-section">
+      <p class="section-label">料金プラン</p>
+      <div class="plans-grid">
+        <div class="plan-card">
+          <p class="plan-name">Starter</p>
+          <p class="plan-price">¥15,000 <span>/ 月</span></p>
+          <p class="plan-desc">小規模チーム向け</p>
+          <ul class="plan-features">
+            <li>最大5データソース接続</li>
+            <li>5分間隔同期</li>
+            <li>メールサポート</li>
+          </ul>
+        </div>
+        <div class="plan-card popular">
+          <span class="popular-badge">ぼったくりNo.1</span>
+          <p class="plan-name">Business</p>
+          <p class="plan-price">¥980,000 <span>/ 月</span></p>
+          <p class="plan-desc">成長企業向け</p>
+          <ul class="plan-features">
+            <li>無制限データソース接続</li>
+            <li>リアルタイム同期</li>
+            <li>専任サポート担当</li>
+          </ul>
+        </div>
+        <div class="plan-card">
+          <p class="plan-name">Enterprise</p>
+          <p class="plan-price">要お見積り</p>
+          <p class="plan-desc">大規模組織向け</p>
+          <ul class="plan-features">
+            <li>専用インフラ構成</li>
+            <li>SLA 99.99% 保証</li>
+            <li>24時間365日対応</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 利用規約 -->
+    <div class="terms-section">
+      <div>
+        <p class="terms-label">無料トライアル</p>
+        <p class="terms-heading">アカウントを作成し、無料体験を開始</p>
+        <p class="terms-note">サービスのご利用にあたり、利用規約への同意が必要です。</p>
+      </div>
+      <button class="btn-primary" onclick="goGame()">アカウント作成はこちらから →</button>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    <span class="footer-logo">UsoPachy</span>
+    <span>© 2025 UsoPachy Inc. All rights reserved.</span>
+  </footer>
+
+  <script>
+    function goGame() {
+      window.parent.postMessage({ type: 'navigate', to: 'register' }, '*');
+    }
+  </script>
+</body>
+</html>

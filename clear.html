@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UsoPachy | アカウント作成完了</title>
+  <link rel="stylesheet" href="site-style.css">
+  <style>
+    body { overflow: hidden; }
+
+    /* ── 紙吹雪 ── */
+    @keyframes confetti-fall {
+      0%   { transform: translateY(-10px) rotate(0deg);   opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0.2; }
+    }
+    .confetti-piece {
+      position: fixed;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 0;
+      animation: confetti-fall linear infinite;
+    }
+
+    /* ── メインコンテンツ ── */
+    .complete-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+      gap: 16px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── チェックアイコン ── */
+    .check-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #e6f4ea;
+      border: 2px solid #a8d8b0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      animation: pop-in 0.6s cubic-bezier(0.34, 1.7, 0.64, 1) both;
+    }
+    @keyframes pop-in {
+      from { opacity: 0; transform: scale(0.3); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* ── テキスト ── */
+    .complete-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: 0.02em;
+      animation: fade-up 0.5s 0.3s ease both;
+    }
+    .divider {
+      width: 40px;
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      animation: fade-up 0.5s 0.45s ease both;
+    }
+    .complete-sub {
+      font-size: 0.85rem;
+      color: var(--text-mid);
+      line-height: 1.8;
+      animation: fade-up 0.5s 0.55s ease both;
+    }
+
+    /* ── メダル ── */
+    .medal-section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      animation: fade-up 0.5s 0.7s ease both;
+    }
+    .medal-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .medal-icon { font-size: 2rem; }
+    .medal-name {
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+    }
+    .medal-next {
+      font-size: 0.72rem;
+      color: var(--text-light);
+    }
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <span class="nav-logo">UsoPachy</span>
+    <ul class="nav-links">
+      <li><a target="_blank" href="#">製品</a></li>
+      <li><a target="_blank" href="#">料金</a></li>
+      <li><a target="_blank" href="#">導入事例</a></li>
+      <li><a target="_blank" href="#">サポート</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-content">
+    <div class="complete-wrap">
+      <div class="check-circle">✅</div>
+      <h1 class="complete-title">アカウント作成が完了しました</h1>
+      <div class="divider"></div>
+      <p class="complete-sub">UsoPachyへのご登録ありがとうございます。<br>引き続きUsoPachyをご利用ください。</p>
+      <div class="medal-section" id="medal-section">
+        <div class="medal-row">
+          <span class="medal-icon" id="medal-icon"></span>
+          <span class="medal-name" id="medal-name"></span>
+        </div>
+        <p class="medal-next" id="medal-next"></p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span class="footer-logo">UsoPachy</span>
+    <span>© 2025 UsoPachy Inc. All rights reserved.</span>
+  </footer>
+
+  <script>
+    // メダル受信
+    window.addEventListener('message', (e) => {
+      if (!e.data || e.data.type !== 'medal') return;
+      const rank    = e.data.rank;
+      const section = document.getElementById('medal-section');
+      if (!rank || !rank.icon) return;
+      document.getElementById('medal-icon').textContent = rank.icon;
+      document.getElementById('medal-name').textContent = rank.name;
+      document.getElementById('medal-name').style.color = rank.color;
+      if (rank.next !== null) {
+        const diff = (rank.sec - rank.next).toFixed(2);
+        document.getElementById('medal-next').textContent = `次のランクまで ${diff}秒`;
+      }
+      section.style.display = 'flex';
+    });
+
+    // 紙吹雪    const COLORS = ['#1a4fd6','#4cd964','#ffd93d','#ff6b6b','#a8c4ff','#6bcb77'];
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      const duration = 5 + Math.random() * 5;
+      // delayを負値にしてアニメーションの途中から開始→ループ時に空白が生まれない
+      const delay = -(Math.random() * duration);
+
+      el.style.left              = Math.random() * 100 + 'vw';
+      el.style.top               = (Math.random() * -30 - 5) + 'vh';
+      el.style.background        = COLORS[Math.floor(Math.random() * COLORS.length)];
+      el.style.width             = (6 + Math.random() * 8)  + 'px';
+      el.style.height            = (10 + Math.random() * 10) + 'px';
+      el.style.animationDuration = duration + 's';
+      el.style.animationDelay    = delay + 's';
+      document.body.appendChild(el);
+    }
+  </script>
+</body>
+</html>
